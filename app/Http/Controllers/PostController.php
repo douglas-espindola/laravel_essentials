@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PostStoreRequest;
+use App\Http\Requests\PostUpdateRequest;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -26,7 +29,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('posts.create');
     }
 
     /**
@@ -35,9 +38,14 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PostStoreRequest $request)
     {
-        //
+        $validatedData = $request->validated();
+        $validatedData['image'] = $request->file('image')->store('posts');
+
+        Post::create($validatedData);
+
+        return to_route('posts.index')->with('status', 'The post created sucessfully.');
     }
 
     /**
@@ -57,9 +65,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Post $post)
     {
-        //
+        return view('posts.edit', compact('post'));
     }
 
     /**
@@ -69,9 +77,25 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(PostUpdateRequest $request, Post $post)
     {
-        //
+        $is_published = 0;
+
+        if ($request->has('is_published')) {
+            $is_published = 1;
+        }
+
+        if ($request->hasFile('image')) {
+            Storage::delete($post->image);
+            $post->image = $request->file('image')->store('/public/posts');
+        }
+
+        $post->update($request->validated() + [
+            'is_published' => $is_published,
+            'image' => $post->image
+        ]);
+
+        return to_route('posts.index')->with('status', 'The post updated sucessfully.');
     }
 
     /**
@@ -80,8 +104,10 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        //
+        $post->delete();
+
+        return to_route('posts.index')->with('status', 'The post deleted sucessfully.');
     }
 }
