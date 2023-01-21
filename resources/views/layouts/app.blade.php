@@ -28,6 +28,9 @@
 
             <!-- Page Content -->
             <main class="max-w-7xl mx-auto">
+                @if (session()->has('status'))
+					<div class="text-green-900 m-2 p-4 bg-green-200">{{ session()->get('status') }}</div>
+				@endif
                 {{ $slot }}
             </main>
         </div>

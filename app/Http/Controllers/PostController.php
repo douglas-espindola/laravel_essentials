@@ -87,7 +87,7 @@ class PostController extends Controller
 
         if ($request->hasFile('image')) {
             Storage::delete($post->image);
-            $post->image = $request->file('image')->store('/public/posts');
+            $post->image = $request->file('image')->store('posts');
         }
 
         $post->update($request->validated() + [
@@ -106,6 +106,7 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        Storage::delete($post->image);
         $post->delete();
 
         return to_route('posts.index')->with('status', 'The post deleted sucessfully.');
