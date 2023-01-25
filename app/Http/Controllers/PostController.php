@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PostStoreRequest;
-use App\Http\Requests\PostUpdateRequest;
+use App\Models\Tag;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use App\Http\Requests\PostStoreRequest;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\PostUpdateRequest;
 
 class PostController extends Controller
 {
@@ -29,7 +30,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        $tags = Tag::all();
+        return view('posts.create', compact('tags'));
     }
 
     /**
@@ -42,8 +44,11 @@ class PostController extends Controller
     {
         $validatedData = $request->validated();
         $validatedData['image'] = $request->file('image')->store('posts');
+        $post = Post::create($validatedData);
 
-        Post::create($validatedData);
+        if ($request->has('tags')) {
+            $post->tags()->attach($request->tags);
+        }
 
         return to_route('posts.index')->with('status', 'The post created sucessfully.');
     }
@@ -67,7 +72,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        return view('posts.edit', compact('post'));
+        $tags = Tag::all();
+        return view('posts.edit', compact('post', 'tags'));
     }
 
     /**
@@ -94,6 +100,8 @@ class PostController extends Controller
             'is_published' => $is_published,
             'image' => $post->image
         ]);
+
+        $post->tags()->sync($request->tags);
 
         return to_route('posts.index')->with('status', 'The post updated sucessfully.');
     }
