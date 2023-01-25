@@ -115,6 +115,7 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         Storage::delete($post->image);
+        $post->tags()->detach();
         $post->delete();
 
         return to_route('posts.index')->with('status', 'The post deleted sucessfully.');
