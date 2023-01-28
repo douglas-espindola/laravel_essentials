@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\WelcomeController;
 use App\Mail\TestMail;
 use Illuminate\Support\Facades\Mail;
 
@@ -18,9 +19,7 @@ use Illuminate\Support\Facades\Mail;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [WelcomeController::class, 'welcome'])->name('welcome');
 
 Route::resource('/posts', PostController::class)->middleware(['auth']);
 Route::resource('/tags', TagController::class)->middleware(['auth']);
