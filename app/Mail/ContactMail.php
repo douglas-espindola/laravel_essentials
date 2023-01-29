@@ -54,7 +54,12 @@ class ContactMail extends Mailable
      */
     public function attachments()
     {
-        // return [];
-        return $this->subject('contact from essential.test')->replyTo($this->email)->markdown('emails.contact');
+        return [];
+    }
+
+    public function build()
+    {
+        return $this->subject('contact from essential.test')->replyTo($this->email)
+            ->markdown('emails.contact');
     }
 }
