@@ -19,5 +19,8 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::get('/posts', [PostApiController::class, 'index']);
-Route::get('/posts/{id}', [PostApiController::class, 'show']);
+Route::get('/posts', [PostApiController::class, 'index'])->name('api.posts.index');
+Route::get('/posts/{id}', [PostApiController::class, 'show'])->name('api.posts.show');
+
+Route::get('/tags', [PostApiController::class, 'tagIndex'])->name('api.tags.index');
+Route::get('/tags/{id}', [PostApiController::class, 'tagShow'])->name('api.tags.show');
